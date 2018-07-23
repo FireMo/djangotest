@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from .models import BlogArticles
 
 
@@ -9,6 +9,13 @@ from .models import BlogArticles
 def blog_title(request):
     blogs = BlogArticles.objects.all()
     # render模板渲染
-    return render(request, "blog/title.html", {"blog": blogs})
+    return render(request, "blog/title.html", {"blogs": blogs})
 
-# Create your views here.
+
+# 响应查看文章详情的请求
+def blog_article(request, article_id):
+    article = BlogArticles.objects.get(id=article_id)
+    # 对超索引的请求进行404处理
+    # article = get_object_or_404(BlogArticles, id=article_id)
+    pub = article.publish
+    return render(request, "blog/content.html", {"article": article, "publish": pub})

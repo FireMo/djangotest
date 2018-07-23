@@ -18,4 +18,4 @@ class BlogArticlesAdmin(admin.ModelAdmin):
 admin.site.register(BlogArticles, BlogArticlesAdmin)
 # admin.site.register(BlogArticles)
 
-# Register your models here.
+
