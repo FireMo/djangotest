@@ -39,6 +39,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'blog',
     'account',
+    'password_reset',
+    'article',
+    'course',
 ]
 
 MIDDLEWARE = [
@@ -76,9 +79,17 @@ WSGI_APPLICATION = 'djangotest.wsgi.application'
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
 DATABASES = {
-    'default': {
+    'slave': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    },
+    "default": {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'djangomysql',
+        'USER': 'root',
+        'PASSWORD': 'root',
+        'HOST': '',
+        'PORT': 3306
     }
 }
 
@@ -128,4 +139,15 @@ STATICFILES_DIRS = (
 TEMPLATE_DIRS = (os.path.join(BASE_DIR,  'templates'),)
 
 LOGIN_REDIRECT_URL = '/blog'
+
+
+EMAIL_HOST = 'smtp.qq.com'
+EMAIL_HOST_USER = '392186207@qq.com'
+EMAIL_HOST_PASSWORD = 'woshilican,?!789'
+EMAIL_PORT = 587
+EMAIL_USER_TLS = True
+DEFAULT_FROM_EMAIL = '392186207@qq.com'
+
+# put the email content into console
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
