@@ -6,8 +6,12 @@ from .models import Course
 from braces.views import LoginRequiredMixin
 from django.core.urlresolvers import reverse_lazy
 from django.views.generic.edit import CreateView, DeleteView
-from django.shortcuts import redirect
-from .forms import CreateCourseForm
+from django.shortcuts import redirect, render
+from django.views import View
+from .forms import CreateCourseForm, CreateLessonForm
+from .models import Lesson
+from django.http import HttpResponse
+import json
 # Create your views here.
 
 
@@ -52,5 +56,30 @@ class CreateCourseView(UserCourseMixin, CreateView):
 
 
 class DeleteCourseView(UserCourseMixin, DeleteView):
-    template_name = "course/manage/delete_course_confirm.html"
+    # template_name = "course/manage/delete_course_confirm.html"
     success_url = reverse_lazy("course:manage_course")
+
+    def dispatch(self, *args, **kwargs):
+        resp = super(DeleteCourseView, self).dispatch(*args, **kwargs)
+        if self.request.is_ajax():
+            response_data = {"result": "ok"}
+            return HttpResponse(json.dumps(response_data), content_type="application/json")
+        else:
+            return resp
+
+
+class CreateLessonView(LoginRequiredMixin, View):
+    model = Lesson
+    login_url = "/account/login/"
+
+    def get(self, request, *args, **kwargs):
+        form = CreateLessonForm(user=self.request.user)
+        return render(request, "course/manage/create_lesson.html", {"form": form})
+
+    def post(self, request, *args, **kwargs):
+        form = CreateLessonForm(self.request.user, request.POST, request.FILES)
+        if form.is_valid():
+            new_lesson = form.save(commit=False)
+            new_lesson.user = self.request.user
+            new_lesson.save()
+            return redirect("course:manage_course")
