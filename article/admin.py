@@ -12,3 +12,4 @@ class ArticleColumnAdmin(admin.ModelAdmin):
     list_filter = ("column",)
 
 admin.site.register(ArticleColumn, ArticleColumnAdmin)
+

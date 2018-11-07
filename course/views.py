@@ -12,6 +12,8 @@ from .forms import CreateCourseForm, CreateLessonForm
 from .models import Lesson
 from django.http import HttpResponse
 import json
+from django.shortcuts import get_object_or_404
+from django.views.generic.base import TemplateResponseMixin
 # Create your views here.
 
 
@@ -83,3 +85,31 @@ class CreateLessonView(LoginRequiredMixin, View):
             new_lesson.user = self.request.user
             new_lesson.save()
             return redirect("course:manage_course")
+
+
+class ListLessonsView(LoginRequiredMixin, TemplateResponseMixin, View):
+    login_url = "/account/login/"
+    template_name = "course/manage/list_lessons.html"
+
+    def get(self, request, course_id):
+        course = get_object_or_404(Course, id=course_id)
+        return self.render_to_response({'course': course})
+
+
+class DetailLessonView(LoginRequiredMixin, TemplateResponseMixin, View):
+    login_url = "/account/login/"
+    template_name = "course/manage/detail_lesson.html"
+
+    def get(self, request, lesson_id):
+        lesson = get_object_or_404(Lesson, id=lesson_id)
+        return self.render_to_response({"lesson": lesson})
+
+
+class StudentListLessonView(ListLessonsView):
+    template_name = "course/slist_lessons.html"
+
+    def post(self, request, *args, **kwargs):
+        course = Course.objects.get(id=kwargs['course_id'])
+        course.student.add(self.request.user)
+        return HttpResponse("ok")
+
